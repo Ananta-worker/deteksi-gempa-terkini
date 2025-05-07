@@ -5,17 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 
 
-
 def ekstraksi_data():
-    """
-    Tanggal: 07 Mei 2025
-    Waktu: 07:16:22 WIB
-    Pusat gempa: Pusat gempa berada di laut 101 km baratdaya Kab. Blitar
-    Magnitudo: 4,5
-    Kedalaman: 84 Km
-    Lokasi: LS: 9,00 BT:111,92
-    :return:
-    """
+
     try:
         content = requests.get('https://bmkg.go.id/')
     except Exception:
@@ -38,7 +29,7 @@ def ekstraksi_data():
         lokasi = None
 
         for res in result:
-            print(i, res.text)
+            # print(i, res.text)
             if i == 0:
                 res = res.text.split(':')
                 magnitudo = res[1]
@@ -50,6 +41,10 @@ def ekstraksi_data():
                 lokasi = res[1]
             i += 1
 
+        result = soup.find('p',{'class':'mt-4 text-xl lg:text-2xl font-bold text-black-primary'})
+        pusat = result.text
+        result = soup.find('p',{'class':'text-sm font-medium text-black-primary'})
+        saran = result.text
 
         hasil = dict()  # fungsi mengembalikan dictionary sama dengan {}
         hasil['tanggal'] = tanggal
@@ -57,7 +52,8 @@ def ekstraksi_data():
         hasil['magnitudo'] = magnitudo
         hasil['kedalaman'] = kedalaman
         hasil['lokasi'] = lokasi
-        # hasil['pusat_gempa'] = 'Pusat gempa berada di laut 101 km barat daya Kab. Blitar'
+        hasil['pusat_gempa'] = pusat
+        hasil['saran'] = saran
         return hasil
     else:
         return None
@@ -68,15 +64,16 @@ def tampilkan_data(result):
         print('Tidak bisa menemukan data gempa terkini')
         return
 
-    print('\nGempa terakhir berdasarkan BMKG')
+    print('\nGempa Bumi Terkini berdasarkan BMKG')
     print('---------------------------------')
-    print(f"Tanggal: {result['tanggal']}")
+    print(f"Titik Gempa: {result['pusat_gempa']}")
+    print(f"\nTanggal: {result['tanggal']}")
     print(f"Waktu: {result['waktu']}")
     print(f"Magnitudo: {result['magnitudo']}")
     print(f"Kedalaman: {result['kedalaman']}")
     print(f"Lokasi: {result['lokasi']}")
+    print(f"\n{result['saran']}")
 
-    # print(f"Pusat Gempa: {result['pusat_gempa']}")
 
 if __name__ == '__main__':
     print('Ini adalah package gempaterkini')
